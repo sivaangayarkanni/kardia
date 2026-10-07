@@ -1,0 +1,22 @@
+services:
+  analyzer:
+    build: .
+    command: ["-mode=analyzer", "-listen=:8080", "-workers=8", "-queue=4096", "-scenario=off"]
+    ports:
+      - "8080:8080"
+    deploy:
+      replicas: 1
+  agent:
+    build: .
+    command: ["-mode=agent", "-ingest-url=http://analyzer:8080/api/v1/ingest", "-scenario=demo", "-interval=1s"]
+    environment:
+      KARDIA_NODE: demo-node
+      KARDIA_CLUSTER: prod-south
+      KARDIA_PLATFORM: kubernetes
+    depends_on:
+      - analyzer
+    pid: host
+    cap_add:
+      - BPF
+      - PERFMON
+      - SYS_RESOURCE

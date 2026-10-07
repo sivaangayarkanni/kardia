@@ -1,0 +1,17 @@
+[Unit]
+Description=Kardia node agent (eBPF incident diagnosis)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/kardia -mode=agent -ingest-url=http://kardia-analyzer:8080/api/v1/ingest -scenario=off -interval=1s
+Environment=KARDIA_PLATFORM=baremetal
+Restart=on-failure
+RestartSec=2
+LimitMEMLOCK=infinity
+AmbientCapabilities=CAP_BPF CAP_PERFMON CAP_SYS_RESOURCE
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
